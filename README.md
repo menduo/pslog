@@ -69,7 +69,7 @@ func main() {
 
 MIT License
 
-## Content Me
+## Contact
 
 shimenduo@gmail.com
 
