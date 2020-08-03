@@ -12,7 +12,7 @@ import (
 var (
 	defaultPrefix    = "moot"
 	defaultErrFormat = "-> %s: "
-	Logger           = NewPsLogger(defaultPrefix)
+	Logger           = New(defaultPrefix)
 )
 
 // PSLogger 带前缀的 Logger
@@ -35,8 +35,8 @@ func (l *PSLogger) Stringer() string {
 	return fmt.Sprintf("<PSLogger>: %s", l.genPrefix())
 }
 
-// NewPsLogger 新建一个 ps logger
-func NewPsLogger(prefix string, opts ...IOption) *PSLogger {
+// New 新建一个 ps logger
+func New(prefix string, opts ...IOption) *PSLogger {
 	if prefix == "" {
 		prefix = defaultPrefix
 	}

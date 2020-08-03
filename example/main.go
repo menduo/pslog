@@ -8,14 +8,14 @@ import (
 
 func main() {
 
-	l1 := pslog.NewPsLogger("l1")
+	l1 := pslog.New("l1")
 	l1sub1 := l1.Sub("sub1", pslog.WithErrorFormat("我的天哪出错了: %s"))
 
-	l2 := pslog.NewPsLogger("l2")
+	l2 := pslog.New("l2")
 
 	l2sub1 := l2.Sub("sub1")
 
-	l3 := pslog.NewPsLogger("l3", pslog.WithLogger(logrus.New()))
+	l3 := pslog.New("l3", pslog.WithLogger(logrus.New()))
 
 	l1.Warn("hello")
 	l2.Warn("hello")
@@ -37,10 +37,11 @@ func main() {
 	l2.Infoln("err1==nil", err1 == nil)         // false
 	l2.Infoln("err1.Error():   ", err1.Error()) // -> [l1]:  this is an error
 
-	l1.Infoln("err1sub1==nil", err1sub1 == nil)  // false
-	l3.Infoln("err1sub1 ===:", err1sub1.Error()) // 	l2.Infoln("err1.Error():   ", err1.Error()) // -> [l1]:  this is an error
+	l1.Infoln("err1sub1==nil", err1sub1 == nil) // false
+	l3.Infoln("err1sub1 ===:", err1sub1.Error())
+	// 	l2.Infoln("err1.Error():   ", err1.Error()) // -> [l1]:  this is an error
 
-	l4 := pslog.NewPsLogger("l4", pslog.WithPSGenerOption(func(pslist []string) string {
+	l4 := pslog.New("l4", pslog.WithPSGenerOption(func(pslist []string) string {
 		return "这是什么前缀啊...." + strings.Join(pslist, "---")
 	}))
 
