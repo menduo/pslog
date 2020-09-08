@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"strings"
+	"sync"
 )
 
 // 默认 Logger
@@ -13,7 +14,10 @@ var (
 	defaultPrefix    = "moot"
 	defaultErrFormat = "-> %s: "
 	Logger           = New(defaultPrefix)
+	mu               sync.RWMutex
 )
+
+var loggersMap = map[string]*PSLogger{}
 
 // PSLogger 带前缀的 Logger
 type PSLogger struct {
@@ -37,6 +41,14 @@ func (l *PSLogger) Stringer() string {
 
 // New 新建一个 ps logger
 func New(prefix string, opts ...IOption) *PSLogger {
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	if loggersMap[prefix] != nil {
+		return loggersMap[prefix]
+	}
+
 	if prefix == "" {
 		prefix = defaultPrefix
 	}
@@ -130,10 +142,20 @@ func (l *PSLogger) pson(ps string, args interface{}) []interface{} {
 	return vs
 }
 
-// Sub 生成一个子 logger
+// Sub 生成一个子 logger，如果已经有了，则返回
 func (l *PSLogger) Sub(prefix string, opts ...IOption) *PSLogger {
+	mu.Lock()
+	defer mu.Unlock()
+
+	newPlist := l.genAppendedPs(prefix)
+
+	fullPs := l.opts.psGener(newPlist)
+	if loggersMap[fullPs] != nil {
+		return loggersMap[fullPs]
+	}
+
 	npl := &PSLogger{
-		psList: l.genAppendedPs(prefix),
+		psList: newPlist,
 		parent: l,
 	}
 
